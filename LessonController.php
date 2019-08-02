@@ -1,13 +1,17 @@
+<!-- the index page gets all trades or courses available in database and displays to the user from newest to oldest 10 at a time-->
 public function index(Request $request)
     {
         $trades = Trade::all();
         $lessons = Lesson::orderBy('created_at', 'desc')->paginate(10);
-
+        
+<!-- In case a course is selected by the user, all the lessons for that course are fetched and displayed in alphabetical order from Z depending on the lesson title 10 at a time -->
         if ($request->input('trade_id')) {
           
             $lessons = Lesson::where('trade_id', $request->input('trade_id'))->orderBy('lesson_title', 'DESC')->paginate(10);
 
         }
+
+<!-- In case a lesson is selected and all sub lessons under the lesson are displayed to user -->
         if ($request->input('lesson_id')) {
           
             $lessons = Lesson::where('id', $request->input('lesson_id'))->orderBy('lesson_title', 'DESC')->paginate(10);
@@ -17,11 +21,7 @@ public function index(Request $request)
         return view('admin.lessons.index', compact('lessons', 'trades'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+<!-- Displays the create page with all the trades in it    -->
     public function create()
     {
         $trades = Trade::all();
@@ -29,13 +29,8 @@ public function index(Request $request)
         return view('admin.lessons.create', compact('trades'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
+<!-- when a course creator wants to create a lesson, he opens the fills the form on the create page and submit. the store function
+is responsible for storing the data that has been submitted. It first checks if the data is ok before submitting-->
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -109,40 +104,15 @@ public function index(Request $request)
         return redirect()->back();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Lesson $lesson)
-    {
-        $trades = Trade::all();
-        return view('admin.lessons.edit', compact('lesson', 'trades'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
+<!-- display the edit form for a particular lesson     -->
+   
     public function edit(Lesson $lesson)
     {
         $trades = Trade::all();
         return view('admin.lessons.edit', compact('lesson', 'trades'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $id
-     *
-     * @return \Illuminate\Http\Response
-     */
+<!--   saves edited data to database  -->
     public function update(Request $request, Lesson $lesson)
     {
         $this->validate($request, [
@@ -203,13 +173,7 @@ public function index(Request $request)
          return redirect()->back();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
+<!--  Delete a particular lesson   -->
     public function destroy($id)
     {
         $lessons = Lesson::find($id);
